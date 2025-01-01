@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Page</title>
+    <link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+    <div class="page">
+        <div class="animation-container">
+            <h1 class="message">Every moment with you feels magical.</h1>
+            <p class="sub-message">You are the reason behind my smile every day.</p>
+        </div>
+        <button class="reveal-button" onclick="revealSurprise(this, 'surprise')">Click to Reveal a Surprise</button>
+        <div id="surprise" class="hidden">
+            <p>You make my world brighter! 🌟</p>
+            <button class="reveal-button" onclick="revealSurprise(this, 'second-surprise')">Click for Another Surprise</button>
+        </div>
+        <div id="second-surprise" class="hidden">
+            <p>With you, every day feels like a dream come true! 💖</p>
+            <button class="reveal-button" onclick="revealSurprise(this, 'third-surprise')">One More Surprise</button>
+        </div>
+        <div id="third-surprise" class="hidden">
+            <p>You are the best thing that ever happened to me! 🌈✨</p>
+            <button class="reveal-button" onclick="revealSurprise(this, 'fourth-surprise')">Final Surprise</button>
+        </div>
+        <div id="fourth-surprise" class="hidden">
+            <p>Being with you feels like a fairytale! 🌸💕</p>
+            <button class="reveal-button" onclick="revealSurprise(this, 'fifth-surprise')">A Special Note</button>
+        </div>
+        <div id="fifth-surprise" class="hidden">
+            <p>I promise you, we will always be together!! 🥺❤️</p>
+        </div>
+    </div>
+    <script>
+        function revealSurprise(button, nextId) {
+            const nextDiv = document.getElementById(nextId);
+
+            if (nextDiv) {
+                nextDiv.classList.remove('hidden');
+            }
+
+            button.remove();
+        }
+    </script>
+</body>
+</html>

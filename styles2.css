@@ -1,0 +1,124 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(120deg, #ff9a9e, #fecfef);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    animation: backgroundScroll 10s linear infinite;
+}
+
+.page {
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.animation-container {
+    animation: fadeIn 3s ease;
+}
+
+.message {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 0;
+    animation: typing 4s steps(40, end), blink 0.7s step-end infinite;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid white;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.sub-message {
+    font-size: 1.7rem;
+    margin-top: 20px;
+}
+
+.reveal-button {
+    margin-top: 30px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    color: #fff;
+    background: #ff7eb3;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, transform 0.2s;
+}
+
+.reveal-button:hover {
+    background: #ff6a9c;
+    transform: translateY(-2px);
+}
+
+.surprise, .second-surprise, .third-surprise {
+    margin-top: 20px;
+    font-size: 1.4rem;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    opacity: 0;
+    transform: scale(0.8);
+    animation: revealAnimation 0.5s forwards;
+    text-align: center;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes blink {
+    from, to {
+        border-color: transparent;
+    }
+    50% {
+        border-color: white;
+    }
+}
+
+@keyframes backgroundScroll {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes revealAnimation {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
