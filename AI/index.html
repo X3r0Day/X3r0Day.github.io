@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="theme-color" content="#0e8f70" />
+  <title>XeroDay AI</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Sidebar">
+      <header class="brand">
+        <div class="logo">⚡</div>
+        <h1>XeroDay AI</h1>
+      </header>
+
+      <div class="field">
+        <label for="modelSelect">Model</label>
+        <div class="select">
+          <select id="modelSelect" aria-label="Model select">
+            <option value="openai/gpt-oss-20b">gpt-oss-20b</option>
+            <option value="openai/gpt-oss-120b">gpt-oss-120b</option>
+            <option value="deepseek-r1-distill-llama-70b">deepseek-70b</option>
+            <option value="meta-llama/llama-4-scout-17b-16e-instruct">llama4-scout-17b-16e</option>
+            <option value="llama-3.3-70b-versatile">llama3.3-70b</option>
+            <option value="gemma2-9b-it">gemma2-9b</option>
+            <option value="qwen/qwen3-32b">qwen3-32b</option>
+          </select>
+          <svg class="caret" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill="currentColor" d="M5.7 7.3a1 1 0 0 1 1.4 0L10 10.2l2.9-2.9a1 1 0 1 1 1.4 1.4l-3.6 3.6a1 1 0 0 1-1.4 0L5.7 8.7a1 1 0 0 1 0-1.4z"/>
+          </svg>
+        </div>
+        <small class="hint">Choose a model for this chat</small>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Session</div>
+        <div class="btn-row">
+          <button id="newChatBtn" class="btn ghost" title="Start a new chat">
+            <span class="btn-ico">＋</span> New chat
+          </button>
+          <button id="clearChatBtn" class="btn ghost" title="Clear conversation">
+            <span class="btn-ico">🧹</span> Clear
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Appearance</div>
+        <label class="toggle">
+          <input id="themeToggle" type="checkbox" />
+          <span class="track"></span>
+          <span class="label">Light theme</span>
+        </label>
+        <label class="toggle">
+          <input id="compactToggle" type="checkbox" />
+          <span class="track"></span>
+          <span class="label">Compact messages</span>
+        </label>
+      </div>
+
+      <footer class="sidebar-footer">
+        <div class="kbd-row">
+          <span class="kbd">Enter</span>
+          <span class="kbd-hint">Send</span>
+        </div>
+        <div class="kbd-row">
+          <span class="kbd">Shift</span><span class="plus">+</span><span class="kbd">Enter</span>
+          <span class="kbd-hint">New line</span>
+        </div>
+        <div class="fineprint">v1.0 • Made with ❤️</div>
+      </footer>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="chat">
+      <header class="topbar" aria-label="Chat header">
+        <div class="conversation-title">
+          <span class="dot"></span>
+          <span class="title">New Conversation</span>
+        </div>
+        <div class="topbar-actions">
+          <span id="modelBadge" class="badge">gpt-oss-20b</span>
+          <button id="exportBtn" class="icon-btn" title="Export chat">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M13 5.8V16a1 1 0 1 1-2 0V5.8L8.7 8.1a1 1 0 0 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 1 1-1.4 1.4L13 5.8zM5 14a1 1 0 0 1 2 0v4h10v-4a1 1 0 1 1 2 0v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-5z"/>
+            </svg>
+          </button>
+          <button id="settingsBtn" class="icon-btn" title="Settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm9 4a1 1 0 0 1-.7.96l-1.7.5a7.9 7.9 0 0 1-.6 1.4l1 1.5a1 1 0 0 1-1.1 1.5l-1.8-.6c-.4.4-.9.7-1.4 1l.1 1.9a1 1 0 0 1-1 .9h-2a1 1 0 0 1-1-.9l.1-1.9a7.6 7.6 0 0 1-1.4-1l-1.8.6a1 1 0 0 1-1.1-1.5l1-1.5c-.2-.5-.5-1-.6-1.4l-1.7-.5A1 1 0 0 1 3 12c0-.4.3-.8.7-.9l1.7-.5c.1-.5.4-1 .6-1.4l-1-1.5A1 1 0 0 1 6.1 6l1.8.6c.4-.4.9-.7 1.4-1L9.2 3.7a1 1 0 0 1 1-.9h2a1 1 0 0 1 1 .9l-.1 1.9c.5.2 1 .5 1.4 1l1.8-.6a1 1 0 0 1 1.1 1.5l-1 1.5c.2.4.5.9.6 1.4l1.7.5c.4.1.7.5.7.9z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div id="chatBox" class="chat-box" aria-live="polite" aria-label="Chat messages">
+        <div id="emptyState" class="empty-state">
+          <div class="empty-emoji">✨</div>
+          <div class="empty-title">Start the conversation</div>
+          <div class="empty-sub">Ask anything about code, systems, or architecture.</div>
+          <div class="suggestions">
+            <button class="chip">Explain Sv39 page tables</button>
+            <button class="chip">Optimize Lua VM dispatch</button>
+            <button class="chip">Debug RISC-V pipeline hazard</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="input-wrap">
+          <textarea
+            id="msgInput"
+            placeholder="Type your message..."
+            rows="1"
+            aria-label="Message input"
+          ></textarea>
+          <div class="hint-row">
+            <span class="hint"><span class="kbd">Shift</span> + <span class="kbd">Enter</span> for new line</span>
+          </div>
+        </div>
+        <button id="sendBtn" class="send-btn" aria-label="Send message" title="Send">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M3.4 20.6 21 13a1 1 0 0 0 0-2L3.4 3.4a1 1 0 0 0-1.3 1.3L6.5 12l-4.4 7.3a1 1 0 0 0 1.3 1.3zM8.7 12l-4-6.7L19 12 4.7 18.7l4-6.7z"/>
+          </svg>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <noscript>
+    Please enable JavaScript to use XeroDay AI.
+  </noscript>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>
