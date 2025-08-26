@@ -54,7 +54,7 @@ async function sendMessage() {
       })
     });
 
-    const data = await resp.json();
+    const data = await res.json();
     const reply = data?.choices?.[0]?.message?.content?.trim() || "(No response)";
 
 
