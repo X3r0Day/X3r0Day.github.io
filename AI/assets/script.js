@@ -54,8 +54,9 @@ async function sendMessage() {
       })
     });
 
-    const data = await res.json();
-    const reply = cleanResponse(data.choices?.[0]?.message?.content || "(No response)");
+    const data = await resp.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim() || "(No response)";
+
 
     loadingMsg.textContent = reply;
     conversation.push({ role: "assistant", content: reply });
