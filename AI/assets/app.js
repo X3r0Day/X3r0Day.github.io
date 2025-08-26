@@ -39,7 +39,7 @@ let TYPE_SPEED = 25;
 /* Settings state */
 const DEFAULT_SETTINGS = {
   theme: "system",
-  typewriter: true,
+  typewriter: false,
   typeSpeed: 12,
   bubbleWidth: 100,
   sidebarWidth: 240,
