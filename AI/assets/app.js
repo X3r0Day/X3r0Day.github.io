@@ -33,7 +33,7 @@ let sessions = loadSessions();
 let currentSessionId = localStorage.getItem(ACTIVE_KEY) || null;
 
 /* Typewriter config */
-let TYPEWRITER = true;
+let TYPEWRITER = false; // have glitches when set to true.
 let TYPE_SPEED = 25;
 
 /* Settings state */
@@ -90,7 +90,7 @@ function applySettings(){
 
 /* ---------- session management ---------- */
 function createSession(name){
-  const s = { id: uid(), name: name || "New Conversation", model: modelSelect?.value || "openai/gpt-oss-20b", messages: [], preview: "", updatedAt: now() };
+  const s = { id: uid(), name: name || "New Conversation", model: modelSelect?.value || "openai/gpt-oss-120b", messages: [], preview: "", updatedAt: now() };
   sessions.unshift(s);
   saveSessions();
   setCurrentSession(s.id);
