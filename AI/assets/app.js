@@ -334,12 +334,18 @@ async function renderAssistantMessage(msgEl, text){
   const container = document.createElement("div");
   container.className = "md";
   msgEl.appendChild(container);
-  await typeText(container, typeof text === "string" ? text : normalizeAssistantContentToMarkdown(text), TYPE_SPEED);
-  container.innerHTML = renderSafeHTML(typeof text === "string" ? text : normalizeAssistantContentToMarkdown(text));
+  const renderable = typeof text === "string" ? text : normalizeAssistantContentToMarkdown(text);
+  if (TYPEWRITER) {
+    await typeText(container, renderable, TYPE_SPEED);
+  } else {
+    container.textContent = renderable;
+  }
+  container.innerHTML = renderSafeHTML(renderable);
   enhanceCodeBlocks(container);
   typesetMath(container);
-  scrollToBottom(false);
+  window.scrollTo({ top: document.body.scrollHeight });
 }
+
 
 function providerFromModel(m){
   if (!m) return { provider: "groq", model: m };
