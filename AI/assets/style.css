@@ -352,3 +352,6 @@ body{
   .actions-col{gap:8px}
   #msgInput{ min-height:44px }
 }
+
+/* Image */
+.message .md img { max-width:100%; height:auto; display:block; margin:8px 0; border-radius:8px }

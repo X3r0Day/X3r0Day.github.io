@@ -17,7 +17,6 @@ const modelBadge = document.getElementById("modelBadge");
 const sessionTitleEl = document.getElementById("sessionTitle");
 const settingsBtn = document.getElementById("settingsBtn");
 
-/* Settings UI elements */
 const settingsModal = document.getElementById("settingsModal");
 const settingsCloseBtn = document.getElementById("settingsCloseBtn");
 const settingsCancelBtn = document.getElementById("settingsCancelBtn");
@@ -32,11 +31,9 @@ const userMdToggle = document.getElementById("userMdToggle");
 let sessions = loadSessions();
 let currentSessionId = localStorage.getItem(ACTIVE_KEY) || null;
 
-/* Typewriter config */
-let TYPEWRITER = false; // have glitches when set to true.
+let TYPEWRITER = false;
 let TYPE_SPEED = 25;
 
-/* Settings state */
 const DEFAULT_SETTINGS = {
   theme: "system",
   typewriter: false,
@@ -47,7 +44,16 @@ const DEFAULT_SETTINGS = {
 };
 let settings = loadSettings();
 
-/* ---------- helpers ---------- */
+let autoScroll = true;
+function isNearBottom(){ return window.innerHeight + window.scrollY >= document.body.scrollHeight - 80; }
+function scrollToBottom(smooth=false){ if(!autoScroll) return; if(smooth) window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); else window.scrollTo(0, document.body.scrollHeight); }
+window.addEventListener("scroll", ()=>{ autoScroll = isNearBottom(); });
+
+const pendingImages = [];
+const composerPreview = (()=>{ const c = document.createElement("div"); c.id = "composerPreview"; c.style.display = "flex"; c.style.flexWrap = "wrap"; c.style.gap = "6px"; c.style.marginTop = "6px"; const wrap = input?.parentElement; if (wrap) wrap.appendChild(c); return c; })();
+const hiddenFileInput = (()=>{ const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.multiple = true; i.style.display = "none"; document.body.appendChild(i); return i; })();
+const attachBtn = (()=>{ const btn = document.createElement("button"); btn.type = "button"; btn.className = "btn small"; btn.textContent = "Attach"; const actions = document.querySelector(".actions-col"); if (actions) actions.prepend(btn); return btn; })();
+
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function now() { return Date.now(); }
 function fmtTime(ts) {
@@ -67,19 +73,15 @@ function loadSettings(){
   catch { return { ...DEFAULT_SETTINGS }; }
 }
 
-/* ---------- Apply settings ---------- */
 function applySettings(){
   const html = document.documentElement;
   if (settings.theme === "dark") html.setAttribute("data-theme", "dark");
   else if (settings.theme === "light") html.setAttribute("data-theme", "light");
   else html.setAttribute("data-theme", "dark");
-
   html.style.setProperty("--msg-max", `${settings.bubbleWidth}%`);
   html.style.setProperty("--sidebar-w", `${settings.sidebarWidth}px`);
-
   TYPEWRITER = !!settings.typewriter;
   TYPE_SPEED = Math.max(5, Math.min(60, Number(settings.typeSpeed) || DEFAULT_SETTINGS.typeSpeed));
-
   if (themeSelect) themeSelect.value = settings.theme;
   if (typewriterToggle) typewriterToggle.checked = !!settings.typewriter;
   if (typeSpeedRange) typeSpeedRange.value = TYPE_SPEED;
@@ -88,7 +90,6 @@ function applySettings(){
   if (userMdToggle) userMdToggle.checked = !!settings.userMarkdown;
 }
 
-/* ---------- session management ---------- */
 function createSession(name){
   const s = { id: uid(), name: name || "New Conversation", model: modelSelect?.value || "openai/gpt-oss-120b", messages: [], preview: "", updatedAt: now() };
   sessions.unshift(s);
@@ -112,7 +113,7 @@ function deleteSession(id){
   const idx = sessions.findIndex(s => s.id === id);
   if (idx === -1) return;
   sessions.splice(idx,1);
-  if (sessions.length) currentSessionId = sessions[0].id; else currentSessionId = null;
+  if (sessions.length) currentSessionId = sessions.id; else currentSessionId = null;
   saveSessions();
   renderSessionsList();
   if (currentSessionId) renderChat(getCurrentSession()); else chatBox.innerHTML = emptyStateTemplate ? emptyStateTemplate.outerHTML : "";
@@ -124,26 +125,21 @@ function updateSessionPreview(id, previewText){
   saveSessions(); renderSessionsList();
 }
 
-/* ---------- render sessions list ---------- */
 function renderSessionsList(filter=""){
   if (!sessionsListEl) return;
   sessionsListEl.innerHTML = "";
   const items = sessions
     .filter(s => !filter || s.name.toLowerCase().includes(filter.toLowerCase()) || (s.preview && s.preview.toLowerCase().includes(filter.toLowerCase())))
     .sort((a,b) => b.updatedAt - a.updatedAt);
-
   if (!items.length){ sessionsListEl.innerHTML = `<div class="session-empty">No chats yet. Click “New” to start.</div>`; return; }
-
   for (const s of items){
     const el = document.createElement("div");
     el.className = "session-item" + (s.id === currentSessionId ? " active" : "");
     el.tabIndex = 0;
-
     const avatar = document.createElement("div");
     avatar.className = "session-avatar";
-    const initials = (s.name || "").split(" ").map(p=>p[0]).slice(0,2).join("").toUpperCase() || "C";
+    const initials = (s.name || "").split(" ").map(p=>p).slice(0,2).join("").toUpperCase() || "C";
     avatar.textContent = initials;
-
     const body = document.createElement("div");
     body.className = "session-body";
     const title = document.createElement("div"); title.className = "session-title"; title.textContent = s.name || "New Conversation";
@@ -152,25 +148,19 @@ function renderSessionsList(filter=""){
     const when = document.createElement("div"); when.className = "badge-time"; when.textContent = fmtTime(s.updatedAt || s.createdAt || Date.now());
     meta.appendChild(when);
     body.appendChild(title); body.appendChild(preview); body.appendChild(meta);
-
     const actions = document.createElement("div"); actions.className = "session-actions";
     const renameBtn = document.createElement("button"); renameBtn.title = "Rename"; renameBtn.innerHTML = "✎";
     renameBtn.addEventListener("click", (ev)=>{ ev.stopPropagation(); const newName = prompt("Rename chat", s.name) || s.name; renameSession(s.id, newName); });
     const delBtn = document.createElement("button"); delBtn.title = "Delete"; delBtn.innerHTML = "🗑";
     delBtn.addEventListener("click", (ev)=>{ ev.stopPropagation(); if(confirm("Delete this chat?")) deleteSession(s.id); });
-
     actions.appendChild(renameBtn); actions.appendChild(delBtn);
-
     el.appendChild(avatar); el.appendChild(body); el.appendChild(actions);
-
     el.addEventListener("click", () => { setCurrentSession(s.id); renderChat(s); });
     el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setCurrentSession(s.id); renderChat(s); } });
-
     sessionsListEl.appendChild(el);
   }
 }
 
-/* ---------- chat rendering ---------- */
 function renderChat(session){
   chatBox.innerHTML = "";
   if (!session || !session.messages || session.messages.length === 0){
@@ -186,37 +176,53 @@ function renderChat(session){
   updateModelBadge();
 }
 
+function normalizeAssistantContentToMarkdown(content){
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content.map(part=>{
+      if (typeof part === "string") return part;
+      if (part?.type === "text" && typeof part.text === "string") return part.text;
+      if (part?.type === "image_url") {
+        const url = typeof part.image_url === "string" ? part.image_url : part.image_url?.url;
+        return url ? `![image](${url})` : "";
+      }
+      return "";
+    }).filter(Boolean).join("\n\n");
+  }
+  return "";
+}
+
+
 function appendMessage(role, text="", isLoading=false, immediate=false){
   const msg = document.createElement("div");
   msg.className = `message ${role === "user" ? "user" : "assistant"}`;
-
   if (isLoading) {
     msg.innerHTML = `<span class="spinner"></span>`;
   } else {
     const container = document.createElement("div");
     if (role === "assistant" || (role === "user" && settings.userMarkdown)) {
       container.className = "md";
+      const renderable = typeof text === "string" ? text : normalizeAssistantContentToMarkdown(text);
       if (immediate) {
-        container.innerHTML = renderSafeHTML(text);
+        container.innerHTML = renderSafeHTML(renderable);
         msg.appendChild(container);
         enhanceCodeBlocks(container);
         typesetMath(container);
       } else {
-        container.textContent = text;
+        container.textContent = renderable;
         msg.appendChild(container);
       }
     } else {
-      container.textContent = text;
-      msg.appendChild(container);
+      const p = document.createElement("div");
+      p.textContent = typeof text === "string" ? text : normalizeAssistantContentToMarkdown(text);
+      msg.appendChild(p);
     }
   }
-
   chatBox.appendChild(msg);
   window.requestAnimationFrame(()=> window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }));
   return msg;
 }
 
-/* ---------- Markdown, sanitize, math ---------- */
 function configureMarked(){
   if (!window.marked) return;
   marked.setOptions({ gfm: true, breaks: false, headerIds: false, mangle: false });
@@ -246,7 +252,8 @@ function sanitizeHTML(dirty){
       ALLOWED_TAGS: false,
       ALLOWED_ATTR: false,
       FORBID_TAGS: ['style','iframe','object','embed','script','noscript'],
-      FORBID_ATTR: ['onerror','onload','onclick','onfocus','onmouseover']
+      FORBID_ATTR: ['onerror','onload','onclick','onfocus','onmouseover'],
+      ALLOW_UNKNOWN_PROTOCOLS: true
     });
   }
   const parser = new DOMParser();
@@ -303,7 +310,6 @@ chatBox.addEventListener('click', async (e)=>{
   }
 });
 
-/* ---------- think handling & typewriter ---------- */
 function extractThink(text){
   if (!text) return [];
   const m = text.match(/<think>[\s\S]*?<\/think>/gi);
@@ -318,7 +324,7 @@ function typeText(el, text, speed = TYPE_SPEED){
     let i = 0;
     const id = setInterval(()=>{
       el.textContent += text[i++] || "";
-      window.scrollTo({ top: document.body.scrollHeight });
+      if (autoScroll) scrollToBottom(false);
       if(i >= text.length){ clearInterval(id); resolve(); }
     }, speed);
   });
@@ -328,58 +334,81 @@ async function renderAssistantMessage(msgEl, text){
   const container = document.createElement("div");
   container.className = "md";
   msgEl.appendChild(container);
-
-  await typeText(container, text, TYPE_SPEED);
-  container.innerHTML = renderSafeHTML(text);
+  await typeText(container, typeof text === "string" ? text : normalizeAssistantContentToMarkdown(text), TYPE_SPEED);
+  container.innerHTML = renderSafeHTML(typeof text === "string" ? text : normalizeAssistantContentToMarkdown(text));
   enhanceCodeBlocks(container);
   typesetMath(container);
-  window.scrollTo({ top: document.body.scrollHeight });
+  scrollToBottom(false);
 }
 
-/* ---------- send to proxy ---------- */
+function providerFromModel(m){
+  if (!m) return { provider: "groq", model: m };
+  if (m.startsWith("openrouter/")) return { provider: "openrouter", model: m.slice("openrouter/".length) };
+  return { provider: "groq", model: m };
+}
+
 async function sendMessage(){
   const session = getCurrentSession();
   if(!session){ createSession(); return; }
-  const message = input.value.trim();
-  if(!message) return;
+  const text = input.value.trim();
+  if(!text && pendingImages.length === 0) return;
 
-  appendMessage("user", message);
-  session.messages.push({ role: "user", content: message });
-  updateSessionPreview(session.id, message);
+  const contentParts = [];
+  if (text) contentParts.push({ type: "text", text });
+  if (pendingImages.length) contentParts.push(...pendingImages);
+
+  const userPayload = contentParts.length > 1 ? contentParts : (text ? text : contentParts);
+  appendMessage("user", text || "[image]");
+  session.messages.push({ role: "user", content: userPayload });
+  updateSessionPreview(session.id, text || "[image]");
   saveSessions();
 
   input.value = "";
+  pendingImages.length = 0;
+  composerPreview.innerHTML = "";
+
   const loadingEl = appendMessage("assistant", "", true);
 
   try {
+    const { provider, model } = providerFromModel(session.model || modelSelect.value);
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: session.model || modelSelect.value, messages: session.messages })
+      body: JSON.stringify({ provider, model, messages: session.messages })
     });
 
-    const text = await res.text();
+    const textResp = await res.text();
     let data;
-    try { data = JSON.parse(text); } catch { data = { raw: text }; }
+    try { data = JSON.parse(textResp); } catch { data = { raw: textResp }; }
 
-    const rawReply = data?.choices?.[0]?.message?.content || data?.result || (typeof data === "string" ? data : null) || "(No response)";
-    const thinks = extractThink(rawReply);
-    const visible = cleanResponse(rawReply);
+    if (!res.ok) {
+      const msg = data?.error?.message || data?.error || data?.raw || textResp || "Unknown error";
+      loadingEl.textContent = `❌ ${msg}`;
+      return;
+    }
+
+    const choice = data?.choices?.[0];
+    const msgObj = choice?.message || choice?.delta || choice;
+    let content = msgObj?.content;
+
+    if (content == null) {
+      loadingEl.textContent = "⚠️ Empty response";
+      return;
+    }
+
+    const renderable = typeof content === "string" ? content : normalizeAssistantContentToMarkdown(content);
 
     loadingEl.innerHTML = "";
-    await renderAssistantMessage(loadingEl, visible);
+    await renderAssistantMessage(loadingEl, renderable);
 
-    session.messages.push({ role: "assistant", content: visible });
-    updateSessionPreview(session.id, visible);
+    session.messages.push({ role: "assistant", content });
+    updateSessionPreview(session.id, typeof renderable === "string" ? renderable : "[response]");
     saveSessions();
-
-    if (thinks.length) console.log("AI THINK:", thinks.join("\n\n---\n\n"));
   } catch (err) {
     loadingEl.textContent = "❌ Error: " + (err.message || err);
   }
 }
 
-/* ---------- UI hooks ---------- */
 function updateModelBadge(){ if (!modelBadge || !modelSelect) return; modelBadge.textContent = modelSelect.value.split("/").pop(); }
 
 sendBtn?.addEventListener("click", sendMessage);
@@ -400,7 +429,6 @@ document.addEventListener("click", (e)=>{
   }
 });
 
-/* ---------- Settings ---------- */
 function openSettings(){ settingsModal?.classList.remove("hidden"); }
 function closeSettings(){ settingsModal?.classList.add("hidden"); }
 settingsBtn?.addEventListener("click", openSettings);
@@ -420,15 +448,54 @@ function bindSettingsUI(){
   settingsSaveBtn?.addEventListener("click", closeSettings);
 }
 
+hiddenFileInput.addEventListener("change", async (e)=>{
+  const files = Array.from(e.target.files || []);
+  await addImagesFromFiles(files);
+  e.target.value = "";
+});
+attachBtn?.addEventListener("click", ()=> hiddenFileInput.click());
+input.addEventListener("paste", async (e)=>{
+  const files = Array.from(e.clipboardData?.files || []).filter(f=>f.type.startsWith("image/"));
+  if (files.length){ e.preventDefault(); await addImagesFromFiles(files); }
+});
+window.addEventListener("dragover", (e)=>{ e.preventDefault(); });
+window.addEventListener("drop", async (e)=>{
+  e.preventDefault();
+  const files = Array.from(e.dataTransfer?.files || []).filter(f=>f.type.startsWith("image/"));
+  if (files.length){ await addImagesFromFiles(files); }
+});
+
+async function fileToDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const r = new FileReader();
+    r.onload = ()=> resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+async function addImagesFromFiles(files){
+  for (const f of files){
+    const url = await fileToDataUrl(f);
+    pendingImages.push({ type: "image_url", image_url: { url } });
+    const img = document.createElement("img");
+    img.src = url;
+    img.style.width = "72px";
+    img.style.height = "72px";
+    img.style.objectFit = "cover";
+    img.style.borderRadius = "8px";
+    img.alt = f.name || "image";
+    composerPreview.appendChild(img);
+  }
+}
+
 (function init(){
   configureMarked();
   applySettings();
   bindSettingsUI();
-
   sessions = loadSessions();
   if (!sessions || !sessions.length) createSession("New Conversation");
   else {
-    if (!currentSessionId || !sessions.find(s=>s.id===currentSessionId)) currentSessionId = sessions[0].id;
+    if (!currentSessionId || !sessions.find(s=>s.id===currentSessionId)) currentSessionId = sessions.id;
     renderSessionsList();
     renderChat(getCurrentSession());
   }

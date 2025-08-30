@@ -52,13 +52,31 @@
         <div class="section-title">Model</div>
         <div class="field">
           <select id="modelSelect" aria-label="Model select">
-            <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
-            <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
-            <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b</option>
-            <option value="meta-llama/llama-4-scout-17b-16e-instruct">meta-llama/llama-4-scout-17b-16e</option>
-            <option value="llama-3.3-70b-versatile">llama-3.3-70b</option>
-            <option value="gemma2-9b-it">gemma2-9b-it</option>
-            <option value="qwen/qwen3-32b">qwen/qwen3-32b</option>
+            <optgroup label="Groq (text)">
+              <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
+              <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
+              <option value="deepseek-r1-distill-llama-70b">deepseek-r1-distill-llama-70b</option>
+              <option value="meta-llama/llama-4-scout-17b-16e-instruct">meta-llama/llama-4-scout-17b-16e</option>
+              <option value="meta-llama/llama-4-maverick-17b-128e-instruct">meta-llama/llama-4-maverick-17b-128e-instruct</option>
+              <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+              <option value="gemma2-9b-it">gemma2-9b-it</option>
+              <option value="qwen/qwen3-32b">qwen/qwen3-32b</option>
+              <option value="allam-2-7b">allam-2-7b</option>
+            </optgroup>
+            <optgroup label="OpenRouter (multi‑modal)">
+              <option value="openrouter/openai/gpt-4o-mini">openrouter/openai/gpt-4o-mini:online</option>
+              <option value="openrouter/meta-llama/llama-3.1-70b-instruct">openrouter/meta-llama/llama-3.1-70b-instruct</option>
+              <option value="openrouter/google/gemini-2.5-flash-image-preview">openrouter/google/gemini-2.5-flash-image-preview:free</option>
+              <option value="openrouter/mistralai/mistral-small-3.2-24b-instruct:free">mistralai/mistral-small-3.2-24b-instruct:free</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="field" style="margin-top:8px">
+          <label for="modalitiesSelect" class="section-title" style="display:block">Output modalities</label>
+          <select id="modalitiesSelect" aria-label="Output modalities">
+            <option value="text">Text only</option>
+            <option value="text,image">Text + Image (generation)</option>
           </select>
         </div>
       </div>
@@ -76,7 +94,7 @@
       <header class="topbar" aria-label="Chat header">
         <div class="conversation-title">
           <span class="dot" aria-hidden="true"></span>
-          <span class="title" id="sessionTitle">New Conversation</span>
+          <span class="title" id="sessionTitle">New Convo</span>
         </div>
         <div class="topbar-actions">
           <span id="modelBadge" class="badge" aria-live="polite">gpt-oss-20b</span>
@@ -89,7 +107,7 @@
         <div id="emptyState" class="empty-state" role="region" aria-label="Start the conversation">
           <div class="empty-emoji" aria-hidden="true">✨</div>
           <div class="empty-title">Start the conversation</div>
-          <div class="empty-sub">Ask anything about code, systems, or architecture.</div>
+          <div class="empty-sub">Ask anything, paste or drop images for multimodal models, or try a quick prompt below.</div>
           <div class="suggestions" role="list">
             <button class="chip" role="listitem">Explain Sv39 page tables</button>
             <button class="chip" role="listitem">Optimize Lua VM dispatch</button>
@@ -102,7 +120,7 @@
         <div class="input-wrap">
           <textarea id="msgInput" placeholder="Type your message..." rows="1" aria-label="Message input" autocomplete="off"></textarea>
           <div class="hint-row">
-            <span class="hint"><span class="kbd">Shift</span> + <span class="kbd">Enter</span> for newline</span>
+            <span class="hint"><span class="kbd">Shift</span> + <span class="kbd">Enter</span> for newline • Paste/drag images for supported models</span>
           </div>
         </div>
         <div class="actions-col">
@@ -113,7 +131,6 @@
     </main>
   </div>
 
-  <!-- Settings -->
   <div id="settingsModal" class="modal hidden">
     <div class="modal-backdrop" data-close="true"></div>
     <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
