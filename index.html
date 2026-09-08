@@ -18,6 +18,10 @@
             <span class="emoji-icon">📝</span>
             <span class="label">Writeups</span>
         </div>
+        <div class="icon-item" ondblclick="openApp('win-about')">
+            <span class="emoji-icon">🧑‍💻</span>
+            <span class="label">AboutMe.exe</span>
+        </div>
         <div class="icon-item" ondblclick="alert('Recycle Bin is empty.')">
             <span class="emoji-icon">🗑️</span>
             <span class="label">Recycle Bin</span>
@@ -86,6 +90,104 @@
         </div>
     </div>
 
+    <div class="window outset" id="win-about" style="display:none; top: 8%; right: 2%; width: 52%; height: 68%;">
+        <div class="title-bar" onmousedown="dragWindow(event, 'win-about')">
+            <div class="title-text"><span style="font-size:16px;">🧑‍💻</span> C:\X3r0Day\AboutMe.exe</div>
+            <div class="title-controls">
+                <button class="btn-ctrl" onclick="minimizeApp('win-about')">_</button>
+                <button class="btn-ctrl" onclick="maximize('win-about', this)">◻</button>
+                <button class="btn-ctrl" onclick="closeApp('win-about')">X</button>
+            </div>
+        </div>
+        <div class="menu-bar">
+            <span>File</span><span>Edit</span><span>View</span><span>Help</span>
+        </div>
+        <div class="window-content inset" id="about-content">
+            <div class="detail-header">
+                <span class="emoji-icon">🧑‍💻</span>
+                <div>
+                    <h2>X3r0Day</h2>
+                    <span class="badge" id="about-badge" title="triple-click me">v2026</span>
+                </div>
+            </div>
+            <div class="detail-body">
+                <h3>About Me</h3>
+                <div class="code-box who-box" style="margin-bottom:15px;">
+                    <div class="who-cmd">C:\X3r0Day&gt; net user x3r0day</div>
+                    <div class="who-row"><span>User name</span><span>x3r0day</span></div>
+                    <div class="who-row"><span>Country</span><span>India</span></div>
+                    <div class="who-row"><span>User Comment</span><span>web security researcher &amp; bug hunter</span></div>
+                    <div class="who-row"><span>Local Group Memberships</span><span>*Administrators</span></div>
+                    <div class="who-row"><span>Status</span><span style="color:#0f0;">200 OK</span></div>
+                </div>
+                <p>
+                    Security researcher from India. I find bugs in things people ship, turn them into
+                    PoCs and writeups, and usually get them fixed. Stack: Python, C, Bash, Assembly.
+                </p>
+                <h3>Findings</h3>
+                <div class="pub-item">
+                    <div class="pub-head">
+                        <a href="https://x.com/X3r0DaySec/status/2060798813603004561" target="_blank">Bun Package Manager Supply Chain - Arbitrary File Write via bun install</a>
+                        <span class="pub-meta"><span class="badge offline">May 2026</span> <a class="badge offline" href="https://github.com/X3r0Day/BunPoCTest" target="_blank">[PoC]</a></span>
+                    </div>
+                    <p class="pub-desc">Discovered and published a PoC showing how bun install allows an attacker to write to ~/.ssh, ~/.bash_profile, or desktop autostart directories, enabling persistence and privilege escalation through malicious packages.</p>
+                </div>
+                <div class="pub-item">
+                    <div class="pub-head">
+                        <a href="https://github.com/X3r0Day/X3r0Day-Research" target="_blank">X3r0Day Research - VSCode .pth &amp; Git FSMonitor PoCs</a>
+                        <span class="pub-meta"><span class="badge offline">2026</span></span>
+                    </div>
+                    <p class="pub-desc">Research repository collecting PoCs for local code execution via IDE-trusted config files. Documents how a committed .venv with a malicious .pth file triggers code execution in VS Code Python extension, and how core.fsmonitor poisoning triggers execution in editors and Git-aware shell prompts.</p>
+                </div>
+                <h3>Research &amp; Publications</h3>
+                <div class="pub-item">
+                    <div class="pub-head">
+                        <a href="https://x.com/X3r0DaySec/status/2063002547561115826" target="_blank">Indian Government Website Data Leak - Responsible Disclosure</a>
+                        <span class="pub-meta"><span class="badge offline">Jun 2026</span></span>
+                    </div>
+                    <p class="pub-desc">Discovered and reported a critical data privacy failure on an Indian Government website exposing user passwords, Aadhaar numbers, IP addresses, phone numbers, and email addresses. Responsibly disclosed to CERT-In with coordinated disclosure pending remediation.</p>
+                </div>
+                <div class="pub-item">
+                    <div class="pub-head">
+                        <a href="https://xerosec.medium.com/local-code-execution-via-git-workspace-poisoning-fsmonitor-7041a2560395" target="_blank">Local Code Execution via Git Workspace Poisoning (FSMonitor)</a>
+                        <span class="pub-meta"><span class="badge offline">May 2026</span></span>
+                    </div>
+                    <p class="pub-desc">Demonstrated how a malicious .git/config with core.fsmonitor can trigger local code execution when a poisoned repository is opened in IDEs like VS Code or Emacs, exploiting automatic Git polling in editor integrations and shell prompts.</p>
+                </div>
+                <div class="pub-item">
+                    <div class="pub-head">
+                        <a href="https://github.com/X3r0Day/Unauthenticated-Hermes-RCE" target="_blank">Hermes Agent - Unauthenticated RCE</a>
+                        <span class="pub-meta"><span class="badge">RCE</span></span>
+                    </div>
+                    <p class="pub-desc">Unauth RCE - session token in plain HTML, whole env of API keys out in the open.</p>
+                </div>
+                <h3>Projects</h3>
+                <ul>
+                    <li><a href="https://github.com/NCRIF/Specter" target="_blank">Specter</a> - Python recon scanner; asyncio port scanning and subdomain bruteforce for fast attack-surface mapping.</li>
+                    <li><a href="https://github.com/X3r0Day/XeroDay-APISniffer" target="_blank">XeroDay-APISniffer</a> - GitHub OSINT scanner; spots leaked API keys and tokens in commits before they get abused.</li>
+                    <li><a href="https://github.com/X3r0Day/InformationDisclosure" target="_blank">InformationDisclosure</a> - Wayback CDX hunter; digs up forgotten .bak/.env and config files from historical indexes.</li>
+                    <li><a href="https://github.com/X3r0Day/WebShame" target="_blank">WebShame</a> - 24x7 wall of shame for secrets pushed to public repos.</li>
+                    <li><a href="https://github.com/X3r0Day/X3r0Day-Research" target="_blank">X3r0Day-Research</a> - research notes, PoCs and technical writeups on web vulnerabilities.</li>
+                </ul>
+                <h3>Tooling</h3>
+                <ul>
+                    <li><strong>Programming:</strong> Python, C, Bash, Assembly</li>
+                    <li><strong>Interests:</strong> Web pentesting, vulnerability research, OSINT scripting</li>
+                </ul>
+                <h3>Contact</h3>
+                <ul>
+                    <li>Email: <a href="mailto:cr4n@duck.com">cr4n@duck.com</a></li>
+                    <li>GitHub: <a href="https://github.com/X3r0Day" target="_blank">github.com/X3r0Day</a></li>
+                </ul>
+                <p style="font-size:13px; color:#444;">hint: triple-click the <strong style="color:#000080;">v2026</strong> badge up top.</p>
+                <div class="code-box" id="about-terminal" style="display:none; margin-top:8px;"></div>
+            </div>
+            <div class="action-btns">
+                <a href="https://github.com/X3r0Day" target="_blank" class="btn-outset">GitHub</a>
+            </div>
+        </div>
+    </div>
+
     <div class="window outset" id="win-writeups" style="display:none; top: 100px; left: 150px;">
         <div class="title-bar" onmousedown="dragWindow(event, 'win-writeups')">
             <div class="title-text"><span style="font-size:16px;">📁</span> C:\X3r0Day\Writeups</div>
@@ -102,7 +204,7 @@
         </div>
     </div>
 >
-    <div class="window outset" id="win-notepad" style="display:none; top: 120px; left: 200px; width: 600px; height: 500px; resize: both; overflow: auto;">
+    <div class="window outset" id="win-notepad" style="display:none; top: 120px; left: 200px; width: 600px; height: 500px; overflow: auto;">
         <div class="title-bar" onmousedown="dragWindow(event, 'win-notepad')">
             <div class="title-text"><span style="font-size:16px;">📝</span> <span id="notepad-title-bar">Notepad</span></div>
             <div class="title-controls">
@@ -129,6 +231,9 @@
             </div>
             <div class="task-tab outset active" id="tab-win-details" style="display:none;" onclick="toggleApp('win-details')">
                 <span style="font-size:14px;" id="tab-det-icon">⚙️</span> <span id="tab-det-title">Program.exe</span>
+            </div>
+            <div class="task-tab outset active" id="tab-win-about" style="display:none;" onclick="toggleApp('win-about')">
+                <span style="font-size:14px;">🧑‍💻</span> AboutMe.exe
             </div>
             <div class="task-tab outset active" id="tab-win-writeups" style="display:none;" onclick="toggleApp('win-writeups')">
                 <span style="font-size:14px;">📁</span> Writeups

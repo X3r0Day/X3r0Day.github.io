@@ -219,6 +219,33 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateClock, 1000);
 
     populateWriteups();
+
+    // Win95-style resize grip on every window
+    document.querySelectorAll('.window').forEach(win => {
+        const grip = document.createElement('div');
+        grip.className = 'resize-grip';
+        win.appendChild(grip);
+
+        grip.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (win.dataset.maximized === 'true') return;
+
+            const startX = e.clientX, startY = e.clientY;
+            const startW = win.offsetWidth, startH = win.offsetHeight;
+
+            function onMove(e) {
+                win.style.width = Math.max(220, startW + (e.clientX - startX)) + 'px';
+                win.style.height = Math.max(160, startH + (e.clientY - startY)) + 'px';
+            }
+            function onUp() {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+            }
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        });
+    });
     
     document.querySelectorAll('.app-icon').forEach(icon => {
         icon.addEventListener('click', () => {
@@ -265,6 +292,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     focusWindow('win-main');
+    openApp('win-about');
+
+    // AboutMe.exe easter egg: triple-click the badge
+    const badge = document.getElementById('about-badge');
+    const term = document.getElementById('about-terminal');
+    if (badge && term) {
+        let taps = 0, tapTimer = null;
+        badge.addEventListener('click', () => {
+            taps++;
+            if (taps === 3) {
+                taps = 0;
+                term.style.display = 'block';
+                term.innerHTML =
+                    `C:\\X3r0Day&gt; whoami<br>` +
+                    `x3r0day<br><br>` +
+                    `C:\\X3r0Day&gt; dir<br>` +
+                    ` Volume in drive C is X3R0-OS<br>` +
+                    ` Directory of C:\\X3r0Day<br><br>` +
+                    `findings   &lt;DIR&gt;   09-08-2026  08:00 PM<br>` +
+                    `README.md          1,337  09-08-2026  08:00 PM<br><br>` +
+                    `C:\\X3r0Day&gt; cd findings<br><br>` +
+                    `C:\\X3r0Day\\findings&gt; dir<br>` +
+                    `hermes_unauth_rce.py  bun_path_traversal.py  fsmonitor_lrce.sh<br><br>` +
+                    `C:\\X3r0Day\\findings&gt; dir /s secrets.txt<br>` +
+                    `File not found - secrets.txt<br>` +
+                    `nice try.`;
+                badge.innerText = 'UNLOCKED';
+                term.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            clearTimeout(tapTimer);
+            tapTimer = setTimeout(() => { taps = 0; }, 800);
+        });
+    }
 
     document.querySelectorAll('.window').forEach(win => {
         win.addEventListener('mousedown', () => focusWindow(win.id));
